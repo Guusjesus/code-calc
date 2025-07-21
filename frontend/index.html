@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>CoDE Calc</title>
+</head>
+<body>
+    <h1>Olá, eu sou o CoDE 🤖</h1>
+
+    <p>Digite seu nome:</p>
+    <input type="text" id="nome" placeholder="Seu nome aqui" />
+    <button onclick="cumprimentar()">Iniciar</button>
+
+    <div id="mensagem"></div>
+
+    <hr>
+
+    <h2>📤 Enviar Planilha para Análise</h2>
+    <input type="file" id="fileInput" accept=".xlsx">
+    <button onclick="enviarArquivo()">Enviar Planilha</button>
+
+    <div id="respostaServidor"></div>
+
+    <script>
+        function cumprimentar() {
+            const nome = document.getElementById('nome').value;
+            const msg = `Olá, ${nome}! Eu sou o CoDE e estou pronto para te ajudar.`;
+            document.getElementById('mensagem').innerText = msg;
+        }
+
+        async function enviarArquivo() {
+            const input = document.getElementById('fileInput');
+            const arquivo = input.files[0];
+            if (!arquivo) {
+                alert("Selecione uma planilha .xlsx");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", arquivo);
+
+            try {
+                const resposta = await fetch("http://127.0.0.1:8000/upload", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const texto = await resposta.text();
+                document.getElementById("respostaServidor").innerText = `✅ Resposta: ${texto}`;
+            } catch (erro) {
+                console.error("Erro:", erro);
+                document.getElementById("respostaServidor").innerText = "❌ Falha ao enviar a planilha.";
+            }
+        }
+    </script>
+</body>
+</html>
